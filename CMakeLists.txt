@@ -47,6 +47,14 @@ FetchContent_Declare(
   GIT_TAG master)
 FetchContent_MakeAvailable(stb)
 list(APPEND INCLUDE_SELF ${stb_SOURCE_DIR})
+
+FetchContent_Declare(
+  gpucpp
+  GIT_REPOSITORY https://github.com/AnswerDotAI/gpu.cpp.git
+  GIT_TAG main)
+FetchContent_MakeAvailable(gpucpp)
+link_libraries(webgpu_dawn)
+
 FetchContent_Declare(
   KawaiiMQ
   GIT_REPOSITORY https://github.com/kagurazaka-ayano/KawaiiMq
