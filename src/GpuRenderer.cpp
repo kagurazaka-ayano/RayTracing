@@ -6,43 +6,39 @@
  */
 
 #include "GpuRenderer.h"
+#include <algorithm>
+#include <memory>
+#include <tuple>
 #include <vector>
-#include "GraphicObjects.h"
+#include "GlobUtil.hpp"
+#include "GpuGraphicalObjects.h"
+#include "IRenderer.h"
+#include "gpu.hpp"
 
-GpuRenderer::GpuImage GpuRenderer::render(const IHittable &world, const Camera &cam, const GpuRendererConf &conf) {}
+RendererOutput GpuRenderer::render(const IHittable &world, const CameraParams &camera_params) {
+	gpu::Context ctx;
+	std::vector<SphereGpu> spheres;
+	std::vector<> spheres;
+	std::vector<MaterialGpu> materials;
+	const int w = camera_params.width, h = camera_params.width * camera_params.aspect_ratio;
+	gpu::Tensor output = gpu::createTensor(ctx, gpu::Shape{static_cast<std::size_t>(w * h * 4)}, gpu::kf32);
+	gpu::Tensor sphere_buf = gpu::createTensor(ctx, gpu::Shape)
+}
+void GpuRenderer::updateCameraParams(const CameraParams &cp) {
+	std::tie(p.px, p.py, p.pz) = unpackVectorToTuple(cp.pos);
+	std::tie(p.ux, p.uy, p.uz) = unpackVectorToTuple(cp.u);
+	std::tie(p.vx, p.vy, p.vz) = unpackVectorToTuple(cp.v);
+	std::tie(p.wx, p.wy, p.wz) = unpackVectorToTuple(cp.w);
+	std::tie(p.pixel00x, p.pixel00y, p.pixel00z) = unpackVectorToTuple(cp.pix_00);
+	std::tie(p.pixel_dx_x, p.pixel_dx_y, p.pixel_dx_z) = unpackVectorToTuple(cp.pix_dx);
+	std::tie(p.pixel_dy_x, p.pixel_dy_y, p.pixel_dy_z) = unpackVectorToTuple(cp.pix_dy);
+	p.width = cp.width;
+	p.height = cp.width * cp.aspect_ratio;
+}
 
-struct SphereGpu {
-	float cx, cy, cz, radius;
-	uint32_t material_idx;
-	// padding is used to better utilizing cache line
-	uint32_t pad[3];
-};
-
-struct MaterialGpu {
-	uint32_t type;
-	float r, g, b;
-	float fuzz;
-	float idx_of_refraction;
-	float r_emm, g_emm, b_emm;
-};
-
-struct Params {
-	// camera metadata
-	float px, py, pz, pad0;
-	float ux, uy, uz, pad1;
-	float vx, vy, vz, pad2;
-	float wx, wy, wz, pad3;
-	float pixel00x, pixel00y, pixel00z, pad4;
-	float pixel_dx_x, pixel_dx_y, pixel_dx_z, pad5;
-	float pixel_dy_x, pixel_dy_y, pixel_dy_z, pad6;
-
-	// render metadata
-	uint32_t width, height;
-	uint32_t sample_per_pixel;
-	uint32_t num_sphere;
-	uint32_t num_material;
-	uint32_t seed_base;
-	float gamma;
-};
-
-static void flattenScene(const IHittable &world, std::vector<SphereGpu> &sphere, std::vector<MaterialGpu> &materials) {}
+RendererPtr GpuRenderer::updateConf(const RendererOptions &renderer_options) {
+	auto result = renderer_options;
+	result.insert(opt.begin(), opt.end());
+	opt = result;
+	return std::make_shared<GpuRenderer>(this);
+}

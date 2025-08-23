@@ -9,8 +9,8 @@ set(CMAKE_GENERATOR
     "Ninja"
     CACHE INTERNAL "Ninja" FORCE)
 set(CMAKE_CXX_COMPILER
-	"clang++"
-	CACHE INTERNAL "clang++" FORCE)
+    "clang++"
+    CACHE INTERNAL "clang++" FORCE)
 
 file(GLOB SRC_NORMAL "./src/*.cpp")
 file(GLOB SRC_NORMAL_NO_MAIN "./src/*.cpp")
@@ -33,10 +33,9 @@ list(APPEND INCLUDE_THIRDPARTIES ${spdlog_SOURCE_DIR}/include)
 link_libraries(spdlog::spdlog)
 
 FetchContent_Declare(
-	eigen
-	GIT_REPOSITORY https://gitlab.com/libeigen/eigen.git
-	GIT_TAG master
-)
+  eigen
+  GIT_REPOSITORY https://gitlab.com/libeigen/eigen.git
+  GIT_TAG master)
 FetchContent_MakeAvailable(eigen)
 list(APPEND INCLUDE_THIRDPARTIES ${eigen_SOURCE_DIR})
 link_libraries(Eigen3::Eigen)
@@ -46,13 +45,14 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/nothings/stb
   GIT_TAG master)
 FetchContent_MakeAvailable(stb)
-list(APPEND INCLUDE_SELF ${stb_SOURCE_DIR})
+list(APPEND INCLUDE_THIRDPARTIES ${stb_SOURCE_DIR})
 
 FetchContent_Declare(
   gpucpp
   GIT_REPOSITORY https://github.com/AnswerDotAI/gpu.cpp.git
   GIT_TAG main)
 FetchContent_MakeAvailable(gpucpp)
+list(APPEND INCLUDE_THIRDPARTIES ${gpucpp_SOURCE_DIR})
 link_libraries(webgpu_dawn)
 
 FetchContent_Declare(

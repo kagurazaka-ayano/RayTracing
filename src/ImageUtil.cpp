@@ -5,8 +5,11 @@
  * @brief
  */
 
+#include <algorithm>
 #include <cmath>
+#include <iterator>
 #include <sys/fcntl.h>
+#include <vector>
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_FAILURE_USERMSG
 #include "ImageUtil.h"
@@ -36,6 +39,19 @@ std::string makePPM(int width, int height, const std::vector<std::vector<Color>>
 	}
 	fout.close();
 	return filepath;
+}
+
+std::string makePPM(const RendererOutput &out, const std::string &name, const std::string &path) {
+	auto width = out.width, height = out.height;
+	std::vector<std::vector<Color>> img;
+	for (int i = 0; i < height; i++) {
+		std::vector<Color> line;
+		for (int j = 0; j < width; j += 3) {
+			line.push_back(Color(out.data[i * width], out.data[i * width + 1], out.data[i * width + 2]));
+		}
+		img.push_back(line);
+	}
+	return makePPM(width, height, img, name, path);
 }
 
 std::string makeGrayscaleString(int width, int height, std::vector<std::vector<Color>> img) {
